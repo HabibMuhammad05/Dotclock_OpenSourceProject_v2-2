@@ -1,4 +1,3 @@
-// ota.ino
 #include <Arduino.h>
 #include <ArduinoOTA.h>
 #include <ESP8266mDNS.h>
@@ -29,7 +28,6 @@ void setupOTA() {
     else if (error == OTA_END_ERROR) DEBUG2_PRINTLN("End Failed");
   });
 
-  // ensure mDNS symbols linked
   if (MDNS.begin(ota_hostname)) DEBUG2_PRINTLN("MDNS responder started");
   else DEBUG2_PRINTLN("MDNS begin failed (ok in AP mode sometimes)");
 

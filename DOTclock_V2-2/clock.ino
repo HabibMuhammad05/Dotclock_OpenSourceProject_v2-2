@@ -1,5 +1,4 @@
-float utcOffset = 7;                     // Time Zone setting
-
+float utcOffset = 7;                    
 #define DIN_PIN 15                       // Data Pin  - NodeMCU D8
 #define CS_PIN  13                       // Chip Sel  - NodeMCU D7
 #define CLK_PIN 12                       // Clock In  - NodeMCU D6
@@ -18,12 +17,6 @@ char txtScroll[80];
 char txtAlarm[20];
 static bool alternate = true;
 
-//unsigned long clkTime = 0;
-//unsigned long dotTime = 0;
-//bool dots = false;
-//bool del = false;
-
-// From alarm.ino
 bool alarmStat;
 
 #include "fonts.h"
@@ -37,18 +30,12 @@ void startDisplay() {
 
 void displayClock() {
 
-  // ============================================================
-  //   ALARM MODE — block everything except the alarm message
-  // ============================================================
   if (alarmStat) {
     sprintf(txtAlarm, "ALARM HIDUP");
-    printString(txtAlarm, fontBesar);   // IMPORTANT: big font
-    return;                             // <- prevents overwriting alarm message
+    printString(txtAlarm, fontBesar);  
+    return;                           
   }
 
-  // ============================================================
-  //   NORMAL CLOCK MODE
-  // ============================================================
   if (millis() - clkTime > 30000 && !del && dots) {
     printDateTime();
     printStringWithShift("  ", 40); delay(5);
@@ -57,32 +44,27 @@ void displayClock() {
       printStringWithShift(teksBuf, 40); 
       delay(5);
     }
-
     sprintf(txtScroll, " -- %s, %d %s %d -- ", 
           namaHari[NTPdayOfWeek], 
           NTPday, 
           monthNames[NTPmonth - 1], 
           NTPyear);
-          
-    printStringWithShift(txtScroll, 40); delay(10);
+
+    printStringWithShift(txtScroll, 40); 
+    delay(10);
     
-    sprintf(txtDHT, "T:%dC - H:%d%", (int)temp, (int)hum);
+    sprintf(txtDHT, "T:%dC - H:%d%%               ", (int)temp, (int)hum);
     if (enableDHT || alternate) {
       printStringWithShift(txtDHT, 40);
-      printStringWithShift("               ", 40); delay(10);
       delay(5);
       alternate = false;
     }else{ 
       ScrollJadwalSholat(); 
       alternate = true;
     }
-
-
-
     clkTime = millis();
   }
 
-  // blinking colon
   if (millis() - dotTime > 500) {
     dots = !dots;
     dotTime = millis();
@@ -90,9 +72,6 @@ void displayClock() {
 
   showAnimClock();
 
-  // ============================================================
-  //   LED BRIGHTNESS CONTROL
-  // ============================================================
   if ( (h == 0) || (h >= 1 && h <= 6) ) {
     sendCmdAll(CMD_INTENSITY, 0);
   }

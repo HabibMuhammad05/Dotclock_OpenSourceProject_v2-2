@@ -1,10 +1,9 @@
-// webpage.h
+
 #ifndef WEBPAGE_H
 #define WEBPAGE_H
 
 #include <pgmspace.h>
 
-// ---------------- INDEX.HTML (font: system default) ----------------
 const char INDEX_HTML[] PROGMEM = R"rawliteral(
 <!DOCTYPE html>
 <html lang="id">
@@ -146,7 +145,6 @@ const char INDEX_HTML[] PROGMEM = R"rawliteral(
 </html>
 )rawliteral";
 
-// ---------------- STYLES.CSS (system default font) ----------------
 const char STYLES_CSS[] PROGMEM = R"rawliteral(
 * {
     margin: 0;
@@ -485,7 +483,6 @@ body {
 }
 )rawliteral";
 
-// ---------------- SUHU.JS ----------------
 const char SUHU_JS[] PROGMEM = R"rawliteral(
 // suhu.js - polling sensor tiap 1s
 const refresh_time = 5000;
@@ -516,7 +513,6 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 )rawliteral";
 
-// ---------------- APP.JS ----------------
 const char APP_JS[] PROGMEM = R"rawliteral(
 // app.js - UI handling, localStorage, send time, text & alarms
 const refreshMs = 1000; // polling interval (ms)
@@ -546,7 +542,6 @@ function closeModal(id){
   m.classList.remove('active'); 
 }
 
-// ===== Time / Date submit (local + send to ESP helpers available below) =====
 function submitTime(e){ 
   e.preventDefault(); 
   const t=document.getElementById('timeInput').value; 
@@ -566,7 +561,6 @@ function submitDate(e){
   closeModal('dateModal'); 
 }
 
-// ===== Alarms (CRUD) =====
 let editingAlarmId = null;
 function submitAlarm(e){
   e.preventDefault();
@@ -602,7 +596,6 @@ function loadAlarms(){
 function editAlarm(id, time){ editingAlarmId = id; document.getElementById('alarmInput').value = time.slice(0,5); openModal('alarmModal'); }
 function deleteAlarm(id){ let alarms = loadData('alarms')||[]; alarms = alarms.filter(a=>a.id!==id); saveData('alarms', alarms); loadAlarms(); }
 
-// ===== Network helpers: send payloads to ESP endpoints =====
 async function sendTimeToESP(payload){
   try{
     const r = await fetch('/set_time', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload) });
@@ -627,7 +620,6 @@ async function sendTextToESP(payload){
   }catch(e){ console.error('sendTextToESP', e); return false; }
 }
 
-// ===== Save actions that call above network helpers =====
 async function saveDateTime(){
   const now = new Date();
   const customTime = document.getElementById("timeInput").value || now.toTimeString().slice(0,5);
@@ -645,7 +637,6 @@ async function saveAlarms(){
   alert(ok? 'Alarm dikirim ke DOTclock ;)' : 'Gagal kirim alarm :(');
 }
 
-// ===== Custom text (placeholder) handling =====
 async function saveCustomText(){
   const now = new Date();
   const inputEl = document.getElementById('textInput');
@@ -658,9 +649,7 @@ async function saveCustomText(){
   alert(ok? 'Teks dikirim ke DOTclock ;)' : 'Teks tersimpan lokal, gagal kirim ke DOTclock :(');
 }
 
-// ===== Init =====
 document.addEventListener('DOMContentLoaded', ()=>{
-  // isi nilai input teks dari localStorage jika ada
   const ts = loadData('text_settings') || {};
   const textInputEl = document.getElementById('textInput');
   if(textInputEl && ts.custom_text !== undefined){
@@ -668,9 +657,9 @@ document.addEventListener('DOMContentLoaded', ()=>{
   }
 
   loadAlarms();
-  // optional: polling atau fetch sensor
+  
   setInterval(()=>{ /* optional: fetch('/getsensor') every 5s if you want */ }, refreshMs);
 });
 )rawliteral";
 
-#endif // WEBPAGE_H
+#endif 

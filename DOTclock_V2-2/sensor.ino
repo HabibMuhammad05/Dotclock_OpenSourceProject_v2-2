@@ -1,6 +1,5 @@
-// sensor.ino
 #include <DHT.h>
-#include "rtc_eeprom.h" // for externs if needed
+#include "rtc_eeprom.h" 
 
 extern float g_lastTemp;
 extern float g_lastHum;

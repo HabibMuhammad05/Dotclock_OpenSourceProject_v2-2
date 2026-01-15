@@ -1,28 +1,18 @@
-// rtc_eeprom.ino
 #include <Wire.h>
 #include <RTClib.h>
 #include <EEPROM.h>
 #include <ArduinoJson.h>
 #include "rtc_eeprom.h"
 
-
-// Definisi nyata RTC
 RTC_DS1307 rtc;
 
-//int h, m, s, NTPday, NTPmonth, NTPyear, NTPdayOfWeek;
-
-// Konstanta untuk EEPROM
 const int EEPROM_SIZE   = 1024;
-const int EEPROM_HEADER = 2;  // dua byte pertama menyimpan panjang data
+const int EEPROM_HEADER = 2; 
 
-// Array nama hari dalam bahasa Indonesia
 const char* hari[7] = {
   "Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"
 };
 
-// -----------------------------------------------------------------------------
-// Inisialisasi RTC dan memuat data alarm dari EEPROM
-// -----------------------------------------------------------------------------
 void initRTCAndLoadAlarms() {
   Wire.begin();
 
@@ -33,15 +23,12 @@ void initRTCAndLoadAlarms() {
 
     if (!rtc.isrunning()) {
       DEBUG2_PRINTLN("RTC belum berjalan!");
-      // rtc.adjust(DateTime(F(__DATE__), F(__TIME__))); // opsional: set waktu compile
     }
   }
 
-  // Inisialisasi EEPROM
   EEPROM.begin(EEPROM_SIZE);
   DEBUG2_PRINTLN("EEPROM initialized.");
 
-  // Tampilkan data alarm dari EEPROM (opsional)
   String s = readJsonFromEEPROM();
   if (s.length() > 10) {
     DEBUG2_PRINT("Loaded alarms JSON: ");
@@ -49,9 +36,6 @@ void initRTCAndLoadAlarms() {
   }
 }
 
-// -----------------------------------------------------------------------------
-// Membaca data JSON dari EEPROM
-// -----------------------------------------------------------------------------
 String readJsonFromEEPROM() {
   uint16_t len = ((uint16_t)EEPROM.read(0) << 8) | EEPROM.read(1);
   if (len == 0xFFFF || len == 0 || len > EEPROM_SIZE - EEPROM_HEADER) return "";
@@ -66,9 +50,6 @@ String readJsonFromEEPROM() {
   return s;
 }
 
-// -----------------------------------------------------------------------------
-// Menulis data JSON ke EEPROM
-// -----------------------------------------------------------------------------
 bool writeJsonToEEPROM(const String& s) {
   int len = s.length();
 
@@ -89,9 +70,6 @@ bool writeJsonToEEPROM(const String& s) {
   return true;
 }
 
-// -----------------------------------------------------------------------------
-// Mengatur RTC berdasarkan data string dari web (tanggal & waktu)
-// -----------------------------------------------------------------------------
 bool setRTCFromStrings(const char* dateStr, const char* timeStr) {
   int yyyy, mm, dd, hh, min;
 
@@ -101,7 +79,6 @@ bool setRTCFromStrings(const char* dateStr, const char* timeStr) {
   DateTime dt(yyyy, mm, dd, hh, min, 0);
   rtc.adjust(dt);
 
-  // Ambil waktu setelah diset
   DateTime now = rtc.now();
   int hariIndex = now.dayOfTheWeek();
 
@@ -115,9 +92,6 @@ bool setRTCFromStrings(const char* dateStr, const char* timeStr) {
   return true;
 }
 
-// -----------------------------------------------------------------------------
-// Menampilkan waktu & tanggal RTC di Serial Monitor
-// -----------------------------------------------------------------------------
 void printDateTime() {
   DateTime now = rtc.now();
   
